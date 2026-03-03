@@ -1,0 +1,26 @@
+from __future__ import annotations
+
+import os
+import sys
+from pathlib import Path
+
+import mlflow
+import mlflow.sklearn
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from fil_rouge.pipelines.ml.train_ml_global import run_train_ml_global
+
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5000")
+MLFLOW_EXPERIMENT_NAME = os.getenv("MLFLOW_EXPERIMENT_NAME", "retail_forecast")
+
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)
+
+
+if __name__ == "__main__":
+    mlflow.sklearn.autolog(log_models=True)
+
+    with mlflow.start_run(run_name="train_ml_global"):
+        run_train_ml_global()
